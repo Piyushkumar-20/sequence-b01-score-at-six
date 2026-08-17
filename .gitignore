@@ -1,0 +1,123 @@
+# =========================
+# Python
+# =========================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.ENV/
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+*.egg
+MANIFEST
+
+# =========================
+# Jupyter Notebook
+# =========================
+
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# =========================
+# Environment / Secrets
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# =========================
+# IDE / Editors
+# =========================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# =========================
+# Testing / Coverage
+# =========================
+
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# =========================
+# Type Checking / Linters
+# =========================
+
+.mypy_cache/
+.pyre/
+.ruff_cache/
+
+# =========================
+# AI / ML Artifacts
+# =========================
+
+# Model checkpoints / weights
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.hdf5
+*.onnx
+*.pkl
+*.pickle
+*.joblib
+*.safetensors
+*.bin
+
+# Experiment tracking / logs
+logs/
+log/
+runs/
+wandb/
+mlruns/
+tensorboard/
+lightning_logs/
+
+# =========================
+# Data
+# =========================
+
+# Uncomment these if your dataset should NOT be committed
+# data/
+# datasets/
+# *.csv
+# *.tsv
+# *.parquet
+# *.json
+
+# =========================
+# Cache / Temporary Files
+# =========================
+
+.cache/
+tmp/
+temp/
+*.tmp
+*.log
+
+# =========================
+# OS Files
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
