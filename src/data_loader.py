@@ -56,24 +56,33 @@ def calculate_balls_since_boundary(
     checkpoint_over: int = 6,
 ) -> int:
     """
-    Calculate balls since the most recent 4 or 6
+    Calculate balls (deliveries) since the most recent 4 or 6
     up to the end of the checkpoint over.
 
-    The scorecard stores entries such as:
-        '0,1,1,1,1,4'
+    The scorecard stores entries in ballByBallSummaries with keys:
+        'firstInnings', 'secondInnings', 'thirdInnings', 'fourthInnings'
+    containing comma-separated deliveries such as:
+        '0,1,1w,1b,w,4,6'
     """
 
-    innings_key = f"{innings_number}Innings"
+    innings_map = {
+        1: "firstInnings",
+        2: "secondInnings",
+        3: "thirdInnings",
+        4: "fourthInnings",
+    }
+    innings_key = innings_map.get(
+        innings_number,
+        f"{innings_number}Innings",
+    )
 
-    balls = []
-
+    # Filter and sort overs up to checkpoint_over
+    valid_overs = []
     for over in ball_summaries:
-
         if not isinstance(over, dict):
             continue
 
         over_number = over.get("overNumber")
-
         if over_number is None:
             continue
 
@@ -82,21 +91,23 @@ def calculate_balls_since_boundary(
         except (TypeError, ValueError):
             continue
 
-        if over_number > checkpoint_over:
-            continue
+        if 1 <= over_number <= checkpoint_over:
+            valid_overs.append((over_number, over))
 
+    valid_overs.sort(key=lambda item: item[0])
+
+    balls = []
+    for _, over in valid_overs:
         ball_string = over.get(
             innings_key,
-            ""
+            "",
         )
 
         if not ball_string:
             continue
 
         for ball in str(ball_string).split(","):
-
             ball = ball.strip()
-
             if ball:
                 balls.append(ball)
 
@@ -106,15 +117,17 @@ def calculate_balls_since_boundary(
     count = 0
 
     for ball in reversed(balls):
-
         token = ball.lower().strip()
 
+        # Check if the delivery is a boundary (4 or 6 off the bat)
         if token in {"4", "6"}:
             return count
 
+        # Increment for all deliveries (dots '0', singles/runs '1'-'3', wickets 'w', extras '1w','1b','1l','1n' etc.)
         count += 1
 
     return count
+
 
 
 def extract_checkpoints(scorecard: dict) -> list[dict]:
