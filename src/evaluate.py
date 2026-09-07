@@ -79,3 +79,17 @@ for result in results:
     print(result)
 
 
+linear_errors = prediction_errors(
+    y_test,
+    linear_pred,
+)
+
+print(
+    "Mean absolute error:",
+    linear_errors["mean_absolute_error"],
+)
+
+print(
+    "Largest absolute error:",
+    linear_errors["largest_error"],
+)
