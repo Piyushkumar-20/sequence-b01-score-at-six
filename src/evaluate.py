@@ -43,3 +43,39 @@ def prediction_errors(y_true, y_pred):
         "mean_absolute_error": np.mean(np.abs(errors)),
         "largest_error": np.max(np.abs(errors)),
     }
+
+from src.evaluate import (
+    evaluate_predictions,
+    prediction_errors,
+)
+
+
+baseline_result = evaluate_predictions(
+    y_test,
+    baseline_pred,
+    "Current Run Rate Baseline",
+)
+
+linear_result = evaluate_predictions(
+    y_test,
+    linear_pred,
+    "Linear Regression",
+)
+
+boosting_result = evaluate_predictions(
+    y_test,
+    boosting_pred,
+    "Gradient Boosting",
+)
+
+
+results = [
+    baseline_result,
+    linear_result,
+    boosting_result,
+]
+
+for result in results:
+    print(result)
+
+
