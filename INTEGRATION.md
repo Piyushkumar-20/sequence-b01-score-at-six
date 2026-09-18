@@ -2,14 +2,14 @@
 
 ## What I produce
 
-B1 — Score at Six produces:
+B1 — Score at Six produces the validated final handoff:
 
 ```text
 results/pred_over6.csv
 ```
 
-The output contains one row for each match/innings prediction at the Over-6
-checkpoint.
+The current output contains one prediction row for each available
+match/innings Over-6 checkpoint (769 rows in the current processed dataset).
 
 ### Output columns
 
@@ -18,12 +18,12 @@ checkpoint.
 | `match` | Match identifier | identifier |
 | `innings` | Innings number | innings number |
 | `predicted_score` | Predicted final innings score | runs |
-| `low_estimate` | Lower prediction bound | runs |
-| `high_estimate` | Upper prediction bound | runs |
+| `low_estimate` | Lower prediction interval bound | runs |
+| `high_estimate` | Upper prediction interval bound | runs |
 
-The file is updated when a prediction is generated for a match/innings after
-the Over-6 checkpoint. The final batch output will contain the required B1
-predictions for the available Over-6 observations.
+`match + innings` is the row identity. The final handoff contains only these
+five contract columns; model-specific fields are kept in the validation
+artifacts rather than exposed to downstream consumers.
 
 ## What I consume
 
@@ -39,7 +39,7 @@ B1 uses rows where:
 over_mark = 6
 ```
 
-Relevant model inputs are the Over-6 checkpoint features:
+Relevant model inputs are:
 
 ```text
 runs_so_far
@@ -49,49 +49,63 @@ balls_since_boundary
 batting_team
 ```
 
-The target during supervised training is:
+The supervised target is:
 
 ```text
 final_score
 ```
 
-## Downstream use
+## Final model and uncertainty
 
-Downstream teams should use:
+The final handoff pipeline uses Gradient Boosting. Final predictions are
+validated with 10 match-level outer folds for each seed from 0 through 9.
+A 90% split-conformal prediction interval is calculated from match-level
+calibration residuals inside each training portion.
+
+Current validation summary:
 
 ```text
-match + innings
+Rows: 769
+Empirical interval coverage: 90.77% (698/769)
+Mean interval width: 71.85 runs
+OOF MAE: 16.95 runs
+OOF RMSE: 21.58 runs
 ```
 
-as the row identity and read the prediction fields from the same row.
+These are validation measurements on the current dataset; they are not a
+guarantee for future unseen matches.
 
-`predicted_score` is the point prediction. `low_estimate` and `high_estimate`
-represent the prediction range once the final uncertainty method has been
-validated.
+## Downstream use
 
-## Week 5 contract status
+Downstream modules should:
 
-`results/pred_over6.csv` currently contains five **dummy rows** to establish
-and test the interface. These values are placeholders and are not final B1
-model results.
+1. Read `results/pred_over6.csv`.
+2. Join rows using `match` and `innings`.
+3. Use `predicted_score` as the point prediction.
+4. Treat `low_estimate` and `high_estimate` as the validated prediction range
+   produced by the B1 uncertainty pipeline.
+
+## Contract history
+
+During Week 5, a five-row dummy `pred_over6.csv` was used to establish and
+test the interface. That artifact has now been replaced by the actual final
+model output. The Week 5 contract columns remain unchanged.
 
 ## Assumptions that could break
 
 1. The input checkpoint must represent the Over-6 state.
 2. `match` and `innings` must uniquely identify a prediction row.
-3. The downstream consumer must not treat the Week 5 dummy values as model
-   performance results.
-4. Final interval bounds will only be considered valid after coverage
-   evaluation.
-5. Source column names in `checkpoints.csv` remain unchanged.
+3. Source feature names in `checkpoints.csv` must remain unchanged.
+4. Downstream consumers must preserve the five-column handoff contract.
+5. The empirical coverage value applies to the current validation data and
+   should not be interpreted as a guaranteed coverage rate for future data.
 
-## Tested against
+## Regeneration
 
-The contract was checked against the current processed checkpoint dataset:
-769 rows, all at `over_mark = 6`, with no missing values in the checked
-columns.
+From the repository root:
 
-## Known incompatibilities
+```bash
+python src/train.py
+```
 
-The Week 5 dummy output is an interface artifact only. It does not yet contain
-validated final predictions or validated uncertainty intervals.
+This regenerates the final handoff and the validation artifacts in `results/`.

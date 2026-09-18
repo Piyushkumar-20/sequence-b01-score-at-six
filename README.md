@@ -21,7 +21,6 @@ The final module will produce a predicted final score together with a **low esti
 | Member 1 | Data       |
 | Member 2 | Model      |
 | Member 3 | Evaluation |
-| Member 4 | Writing    |
 
 All team members are expected to contribute to the repository and understand the complete project pipeline.
 
@@ -292,9 +291,14 @@ git push
 
 ## Current Status
 
-**Week 1:** Repository setup
-**Week 2:** Data exploration — waiting for department dataset
-**Week 3:** Literature review
+**Week 1:** Repository setup — complete
+**Week 2:** Data exploration — complete
+**Week 3:** Literature review — complete
+**Week 4:** Current-run-rate baseline evaluation — complete
+**Week 5:** Output contract / integration handshake — complete
+**Week 6–7:** Linear Regression and Gradient Boosting comparison with 10 match-level seeds — complete
+**Final prediction + uncertainty:** Actual `pred_over6.csv` generated with 90% split-conformal intervals — complete
+**Final validation / freeze:** In progress
 
 ---
 

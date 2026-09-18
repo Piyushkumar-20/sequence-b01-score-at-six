@@ -297,70 +297,6 @@ def conformal_quantile(abs_residuals: np.ndarray, coverage: float) -> float:
     return float(values[rank])
 
 
-def fit_final_prediction_fold(
-    data: pd.DataFrame, outer_seed: int
-) -> tuple[pd.DataFrame, float]:
-    """
-    Create honest out-of-fold predictions for the final B1 output.
-
-    The outer validation match groups are never used for fitting or
-    calibration. The remaining matches are split into a model-fit portion
-    and a calibration portion. The calibration residual quantile gives a
-    90% split-conformal prediction interval.
-    """
-    outer_splitter = GroupShuffleSplit(
-        n_splits=1,
-        test_size=VALIDATION_SIZE,
-        random_state=outer_seed,
-    )
-    fit_cal_idx, outer_idx = next(
-        outer_splitter.split(data, groups=data["match_id"])
-    )
-    fit_cal = data.iloc[fit_cal_idx].copy()
-    outer = data.iloc[outer_idx].copy()
-
-    inner_splitter = GroupShuffleSplit(
-        n_splits=1,
-        test_size=CALIBRATION_SIZE,
-        random_state=outer_seed + 100
-    )
-    fit_idx, calibration_idx = next(
-        inner_splitter.split(fit_cal, groups=fit_cal["match_id"])
-    )
-    fit_data = fit_cal.iloc[fit_idx].copy()
-    calibration = fit_cal.iloc[calibration_idx].copy()
-
-    model = build_gradient_boosting(outer_seed)
-    model.fit(fit_data[FEATURE_COLUMNS], fit_data[TARGET_COLUMN])
-
-    calibration_predictions = model.predict(calibration[FEATURE_COLUMNS])
-    calibration_residuals = (
-        calibration[TARGET_COLUMN].to_numpy(dtype=float)
-        - calibration_predictions
-    )
-    interval_half_width = conformal_quantile(
-        np.abs(calibration_residuals), CONFORMAL_COVERAGE
-    )
-
-    outer_predictions = model.predict(outer[FEATURE_COLUMNS])
-    lower = np.maximum(0.0, outer_predictions - interval_half_width)
-    upper = outer_predictions + interval_half_width
-
-    output = pd.DataFrame(
-        {
-            "match": outer["match_id"].to_numpy(),
-            "innings": outer["innings"].to_numpy(),
-            "predicted_score": outer_predictions,
-            "low_estimate": lower,
-            "high_estimate": upper,
-            "actual_score": outer[TARGET_COLUMN].to_numpy(),
-            "interval_half_width": interval_half_width,
-            "seed": outer_seed,
-        }
-    )
-    return output, interval_half_width
-
-
 def build_final_prediction_output(
     data: pd.DataFrame,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -612,7 +548,6 @@ def main() -> None:
         gradient_summary, "Gradient Boosting", "W6-B1-GRADIENT-BOOSTING", "Member 1"
     )
 
-    # Member 2: produce the actual B1 handoff and validate its uncertainty range.
     final_predictions, coverage_summary = build_final_prediction_output(data)
     save_final_prediction_outputs(final_predictions, coverage_summary)
     log_final_prediction_experiment(coverage_summary)
