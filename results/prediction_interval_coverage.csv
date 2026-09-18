@@ -1,0 +1,2 @@
+coverage_target,empirical_coverage,covered_rows,total_rows,mean_range_width,median_range_width,point_MAE,point_RMSE
+0.9,0.9076723016905072,698,769,71.85318141804319,71.68990019469085,16.94550186639983,21.58449362233246
