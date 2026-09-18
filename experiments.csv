@@ -1,0 +1,7 @@
+run_id,date,who,what_changed,main_metric,value,seed,notes
+W4-B1-BASELINE-MAE-42,2026-09-18,Member 1,Established Over-6 current-run-rate baseline with match-level development split,MAE,23.1212,42,"95% bootstrap CI [20.3046, 26.0374]; validation rows=154; validation matches=77."
+W4-B1-BASELINE-RMSE-42,2026-09-18,Member 1,Established Over-6 current-run-rate baseline with match-level development split,RMSE,29.2549,42,"95% bootstrap CI [25.8834, 32.5985]; validation rows=154; validation matches=77."
+W4-B1-BASELINE-MAE-42,2026-09-18,Member 1,Established Over-6 current-run-rate baseline with match-level development split,MAE,23.1212,42,"95% bootstrap CI [20.3046, 26.0374]; validation rows=154; validation matches=77."
+W4-B1-BASELINE-RMSE-42,2026-09-18,Member 1,Established Over-6 current-run-rate baseline with match-level development split,RMSE,29.2549,42,"95% bootstrap CI [25.8834, 32.5985]; validation rows=154; validation matches=77."
+W4-B1-BASELINE-MAE-42,2026-09-18,Member 1,Established Over-6 current-run-rate baseline with match-level development split,MAE,23.1212,42,"95% bootstrap CI [20.3046, 26.0374]; validation rows=154; validation matches=77."
+W4-B1-BASELINE-RMSE-42,2026-09-18,Member 1,Established Over-6 current-run-rate baseline with match-level development split,RMSE,29.2549,42,"95% bootstrap CI [25.8834, 32.5985]; validation rows=154; validation matches=77."
